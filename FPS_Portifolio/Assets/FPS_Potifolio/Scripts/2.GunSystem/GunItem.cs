@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using static ControllerModels;
@@ -66,12 +67,15 @@ public class GunItem : HandableItem
 
     public Transform shootPoint;
 
+    #region - Ammo System -
     [Header("Ammo")]
     public int currentMagAmmo;
     public int magMaxAmmo;
 
     public int inventoryAmmo;
     public int inventoryMaxAmmo;
+    public TextMeshProUGUI ammoText;
+    #endregion
 
     public bool canShoot = true;
 
@@ -80,6 +84,7 @@ public class GunItem : HandableItem
 
     private void Awake()
     {
+        inventoryAmmo = inventoryMaxAmmo;
         playerController = Controller_Character.PlayerIntance;
         recoilAsset = GetComponent<GunProceduralRecoil>();
         CheckItem();
@@ -96,6 +101,13 @@ public class GunItem : HandableItem
         CalculateWeaponSway();
         CalculateAimingIn();
         ShootInput();
+        AnimationsStates();
+        GetInputs();
+    }
+    private void GetInputs()
+    {
+        if (Input.GetKeyDown(KeyCode.R) && currentMagAmmo < magMaxAmmo) Reload();
+
     }
     private void CalculateAimingIn()
     {
@@ -156,7 +168,7 @@ public class GunItem : HandableItem
     private Vector3 LissajousCurve(float Time, float A, float B) => new Vector3(Mathf.Sin(Time), A * Mathf.Sin(B * Time + Mathf.PI));
     private void ShootInput()
     {
-        if (Input.GetMouseButton(0) && canShoot)
+        if (Input.GetMouseButton(0) && canShoot && !(currentMagAmmo <= 0) && !isReloading && !isSprinting)
         {
             recoilAsset.RecoilFire(isAiming);
             canShoot = false;
@@ -190,6 +202,29 @@ public class GunItem : HandableItem
             Vector3 direction = Direction + new Vector3(X, Y, 0);
 
             for (int i = 0; i < ShootAsset.ShootsPerTap; i++) if (Physics.Raycast(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.position, direction, out ShootAsset.hit, ShootAsset.ShootRange, HitInteractionLayer)) ShootAsset.InstantiateSelectedParticles(ShootAsset.hit.transform.tag, ShootAsset.hit.point, ShootAsset.hit.normal);
+        }
+    }
+    void AnimationsStates()
+    {
+        modelAnimator.SetBool("Reloading", isReloading);
+    }
+    void Reload()
+    {
+        isReloading = true;
+    }
+    public void EndReload()
+    {
+        isReloading = false;
+        int neededAmmo = magMaxAmmo - currentMagAmmo;
+        if (neededAmmo > inventoryAmmo)
+        {
+            currentMagAmmo = inventoryAmmo;
+            inventoryAmmo = 0;
+        }
+        else if (neededAmmo < inventoryAmmo)
+        {
+            currentMagAmmo = magMaxAmmo;
+            inventoryAmmo -= magMaxAmmo;
         }
     }
 }

@@ -62,6 +62,7 @@ public class Controller_Character : MonoBehaviour
     public bool isGrounded;
     public bool isSprinting;
     public bool isAiming;
+    public bool isReloading;
     #endregion
 
     #region - Stance System -
@@ -119,6 +120,7 @@ public class Controller_Character : MonoBehaviour
         isAiming = Input.GetMouseButton(1) && !isSprinting;
         isWalking = isGrounded && input_Movment != Vector2.zero;
         isGrounded = characterController.isGrounded;
+        isReloading = CurrentGun.GetComponent<GunItem>().isReloading;
 
         Sprint();
         CalculateAiming();
@@ -155,7 +157,8 @@ public class Controller_Character : MonoBehaviour
 
         //handableAnimationSpeed = characterController.velocity.magnitude / ((playerSettings.WalkingForwardSpeed * playerSettings.AnimationEffectorMultiplier) * playerSettings.SpeedEffector);
 
-        if (isAiming) handableAnimationSpeed = characterController.velocity.magnitude * CurrentGun.GetComponent<GunItem>().gunSettings.AimAnimationEffector;
+        if (isReloading) handableAnimationSpeed = 1;
+        else if (isAiming) handableAnimationSpeed = characterController.velocity.magnitude * CurrentGun.GetComponent<GunItem>().gunSettings.AimAnimationEffector;
         else if (!isAiming) handableAnimationSpeed = (characterController.velocity.magnitude / (playerSettings.WalkingForwardSpeed * playerSettings.SpeedEffector)) / 1.3f;
 
         if (handableAnimationSpeed > 1) handableAnimationSpeed = 1;
@@ -239,4 +242,5 @@ public class Controller_Character : MonoBehaviour
 
         return Physics.CheckCapsule(start, end, characterController.radius, playerMask);
     }
+    public void StopReload() => CurrentGun.GetComponent<GunItem>().EndReload();
 }
