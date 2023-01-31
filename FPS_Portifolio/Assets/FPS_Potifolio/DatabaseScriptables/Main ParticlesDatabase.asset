@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b418a1efd5e7be4db4954cd13b41940, type: 3}
+  m_Name: Main ParticlesDatabase
+  m_EditorClassIdentifier: 
+  BaseName: ParticlesDatabase
+  particles:
+  - HitParticle: {fileID: 186004, guid: df6885b13dec8be4582be8c2c2219da2, type: 3}
+    ImpactDecal: {fileID: 186004, guid: 1fad06db51ffb86458cb3de2b4fc05c2, type: 3}
+    SurfaceTag: Surf_Dirt
+  - HitParticle: {fileID: 180772, guid: 697d9a1e52bb99d468a5d727e5a4b435, type: 3}
+    ImpactDecal: {fileID: 180772, guid: 52aa1f2e1567b6e47b50df0d054982a7, type: 3}
+    SurfaceTag: Surf_Metal
+  - HitParticle: {fileID: 168394, guid: 93983eaa39ee5d4408c0b10200e234b4, type: 3}
+    ImpactDecal: {fileID: 129456, guid: 92422eb8369387a41a9a6259935757ac, type: 3}
+    SurfaceTag: Surf_Glass
+  - HitParticle: {fileID: 142740, guid: ce4fb833f44504e48b46c3474bc747fc, type: 3}
+    ImpactDecal: {fileID: 142740, guid: f9c851a5a12292f4d9a24acc3899803b, type: 3}
+    SurfaceTag: Surf_Rock
+  - HitParticle: {fileID: 108086, guid: 547c2e12da8d4214098216299e70a3ba, type: 3}
+    ImpactDecal: {fileID: 108086, guid: e4ed01af280d76248a9d0e72030c40c6, type: 3}
+    SurfaceTag: Surf_Concrete
+  - HitParticle: {fileID: 178032, guid: ea6cf4c5efb69b94db988e2fbfd72698, type: 3}
+    ImpactDecal: {fileID: 178032, guid: 70293ccb9b36ad84ebb90509a675fc1e, type: 3}
+    SurfaceTag: Surf_Plaster
