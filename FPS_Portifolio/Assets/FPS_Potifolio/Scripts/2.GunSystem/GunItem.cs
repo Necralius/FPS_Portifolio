@@ -76,10 +76,12 @@ public class GunItem : HandableItem
     public bool canShoot = true;
 
     public LayerMask HitInteractionLayer;
+    public GunProceduralRecoil recoilAsset;
 
     private void Awake()
     {
         playerController = Controller_Character.PlayerIntance;
+        recoilAsset = GetComponent<GunProceduralRecoil>();
         CheckItem();
     }
     private void Start()
@@ -156,6 +158,7 @@ public class GunItem : HandableItem
     {
         if (Input.GetMouseButton(0) && canShoot)
         {
+            recoilAsset.RecoilFire(isAiming);
             canShoot = false;
             currentMagAmmo--;
             StartCoroutine(ShootAction());
@@ -163,8 +166,7 @@ public class GunItem : HandableItem
     }
     IEnumerator ShootAction()
     {
-        playerController.recoilAsset.RecoilFire(isAiming);
-        RaycastShoot(playerController.cameraHolder.transform.forward, ShootAsset.shootType);
+        RaycastShoot(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.forward, ShootAsset.shootType);
         yield return new WaitForSeconds(ShootAsset.RateOfFire);
         canShoot = true;
     }

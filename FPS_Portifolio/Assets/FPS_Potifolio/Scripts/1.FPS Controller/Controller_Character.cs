@@ -20,7 +20,6 @@ public class Controller_Character : MonoBehaviour
     public Transform cameraHolder;
     public Transform feetTransform;
 
-    public GunProceduralRecoil recoilAsset;
     [Space]
 
     #region - Movment and View Inputs -

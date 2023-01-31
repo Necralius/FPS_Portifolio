@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shootType: 0
   ShootDamage: 20
-  RateOfFire: 0.2
+  RateOfFire: 0.15
   ShootRange: 300
   MuzzleFlash: []
   EnemyMask:
@@ -22,5 +22,4 @@ MonoBehaviour:
     m_Bits: 0
   ShootsPerTap: 5
   ShootSpread: 0.05
-  canShoot: 0
   particlesDatabase: {fileID: 11400000, guid: d7f604af3ab87f449b6eb348e47ac1de, type: 2}
