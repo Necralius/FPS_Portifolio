@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using static ControllerModels;
@@ -65,6 +66,7 @@ public class Controller_Character : MonoBehaviour
     public bool isReloading;
     #endregion
 
+    public bool StopAimInput = false;
     #region - Stance System -
     [Header("Stance")]
     public PlayerStance playerStance;
@@ -83,7 +85,10 @@ public class Controller_Character : MonoBehaviour
     private float stanceCapsuleHeightVelocity;
     #endregion
 
-    public float handableAnimationSpeed;
+    [HideInInspector] public float handableAnimationSpeed;
+
+    public TextMeshProUGUI ammoText;
+    public TextMeshProUGUI healthText;
 
     private void Awake()
     {
@@ -117,7 +122,7 @@ public class Controller_Character : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftControl)) Crouch();
         if (Input.GetKeyDown(KeyCode.Z)) Prone();
 
-        isAiming = Input.GetMouseButton(1) && !isSprinting;
+        if (!StopAimInput) isAiming = Input.GetMouseButton(1) && !isSprinting;
         isWalking = isGrounded && input_Movment != Vector2.zero;
         isGrounded = characterController.isGrounded;
         isReloading = CurrentGun.GetComponent<GunItem>().isReloading;

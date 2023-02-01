@@ -17,6 +17,7 @@ public class GunItem : HandableItem
     #endregion
 
     private Controller_Character playerController;
+    private Camera playerCam => playerController.cameraHolder.GetComponentInChildren<Camera>();
 
     [Header("Gun Control Settings")]
     public WeaponSettingsModel gunSettings;
@@ -61,8 +62,16 @@ public class GunItem : HandableItem
     [Header("Aiming Sights")]
     public Transform sightTarget;
     public float sightOffset;
+    public float defaultSightOffset;
+    public float reloadingSightOffset;
     public float aimingTime;
     public float aimingSacaleFactor = 4;
+
+    public float defaultFov;
+    public float aimFov;
+    private float currentFov;
+    public float aimTime;
+
     #endregion
 
     public Transform shootPoint;
@@ -74,25 +83,20 @@ public class GunItem : HandableItem
 
     public int inventoryAmmo;
     public int inventoryMaxAmmo;
-    public TextMeshProUGUI ammoText;
     #endregion
 
     public bool canShoot = true;
 
     public LayerMask HitInteractionLayer;
-    public GunProceduralRecoil recoilAsset;
+    public GunProceduralRecoil recoilAsset => GetComponent<GunProceduralRecoil>();
 
     private void Awake()
     {
         inventoryAmmo = inventoryMaxAmmo;
         playerController = Controller_Character.PlayerIntance;
-        recoilAsset = GetComponent<GunProceduralRecoil>();
         CheckItem();
     }
-    private void Start()
-    {
-        newWeaponRotation = transform.localRotation.eulerAngles;
-    }
+    private void Start() => newWeaponRotation = transform.localRotation.eulerAngles;
     private void Update()
     {
         PlayerStateData();
@@ -103,14 +107,20 @@ public class GunItem : HandableItem
         ShootInput();
         AnimationsStates();
         GetInputs();
+        UpdateTexts();
     }
     private void GetInputs()
     {
         if (Input.GetKeyDown(KeyCode.R) && currentMagAmmo < magMaxAmmo) Reload();
-
     }
     private void CalculateAimingIn()
     {
+        currentFov = isAiming ? aimFov : defaultFov;
+
+        playerCam.fieldOfView = Mathf.Lerp(playerCam.fieldOfView, currentFov, aimTime * Time.deltaTime);
+
+        sightOffset = isReloading && isAiming ? reloadingSightOffset : defaultSightOffset;
+        
         Vector3 targetPosition = transform.position;
 
         if (isAiming) targetPosition = playerController.cameraHolder.transform.position + (weaponSwayObject.transform.position - sightTarget.position) + (playerController.cameraHolder.transform.forward * sightOffset);
@@ -120,11 +130,11 @@ public class GunItem : HandableItem
 
         weaponSwayObject.transform.position = weaponSwayPosition + swayPosition;
     }
-    void PlayerStateData()
+    private void PlayerStateData()
     {
         isWalking = playerController.isWalking; isSprinting = playerController.isSprinting;
     }
-    void AnimationCalculations()
+    private void AnimationCalculations()
     { 
         if (handableAnim != null)
         {
@@ -132,7 +142,7 @@ public class GunItem : HandableItem
         }
         else return;
     }
-    void CalculateWeaponRotation()
+    private void CalculateWeaponRotation()
     {
         handableAnim.speed = this.animatorSpeed;
         modelAnimator.speed = this.animatorSpeed;
@@ -204,14 +214,9 @@ public class GunItem : HandableItem
             for (int i = 0; i < ShootAsset.ShootsPerTap; i++) if (Physics.Raycast(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.position, direction, out ShootAsset.hit, ShootAsset.ShootRange, HitInteractionLayer)) ShootAsset.InstantiateSelectedParticles(ShootAsset.hit.transform.tag, ShootAsset.hit.point, ShootAsset.hit.normal);
         }
     }
-    void AnimationsStates()
-    {
-        modelAnimator.SetBool("Reloading", isReloading);
-    }
-    void Reload()
-    {
-        isReloading = true;
-    }
+    private void UpdateTexts() => playerController.ammoText.text = string.Format("{0}/{1}", currentMagAmmo, inventoryAmmo);
+    private void AnimationsStates() => modelAnimator.SetBool("Reloading", isReloading);
+    private void Reload() => isReloading = true;
     public void EndReload()
     {
         isReloading = false;
