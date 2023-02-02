@@ -90,6 +90,14 @@ public class GunItem : HandableItem
     public LayerMask HitInteractionLayer;
     public GunProceduralRecoil recoilAsset => GetComponent<GunProceduralRecoil>();
 
+    public Transform objectToDebug;
+    public Vector3 PosDebugger;
+
+    [Header("Audio System")]
+    public AudioClip shootSound;
+
+
+
     private void Awake()
     {
         inventoryAmmo = inventoryMaxAmmo;
@@ -99,6 +107,8 @@ public class GunItem : HandableItem
     private void Start() => newWeaponRotation = transform.localRotation.eulerAngles;
     private void Update()
     {
+        if (objectToDebug != null) PosDebugger = objectToDebug.transform.localPosition;
+        
         PlayerStateData();
         AnimationCalculations();
         CalculateWeaponRotation();
@@ -189,6 +199,9 @@ public class GunItem : HandableItem
     IEnumerator ShootAction()
     {
         RaycastShoot(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.forward, ShootAsset.shootType);
+        GameManager.Instance.PlayShootSound(shootSound, 0.8f, 1f);
+        ShootAsset.InstatiateParticles("MuzzleFlash", shootPoint.transform.position, shootPoint.transform.eulerAngles);
+
         yield return new WaitForSeconds(ShootAsset.RateOfFire);
         canShoot = true;
     }
@@ -231,5 +244,10 @@ public class GunItem : HandableItem
             currentMagAmmo = magMaxAmmo;
             inventoryAmmo -= magMaxAmmo;
         }
+    }
+    private void ShootSound()
+    {
+
+
     }
 }

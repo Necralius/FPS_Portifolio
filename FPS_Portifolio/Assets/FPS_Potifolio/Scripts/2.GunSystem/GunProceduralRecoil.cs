@@ -2,41 +2,6 @@ using UnityEngine;
 
 public class GunProceduralRecoil : MonoBehaviour
 {
-    #region - Previus Script -
-    //public GameObject ObjectToSetRecoil;
-
-    //private Vector3 currentRotation;
-    //private Vector3 targetRotation;
-
-    ////Hipfire
-    //public float recoilX;
-    //public float recoilY;
-    //public float recoilZ;
-
-    ////Settings
-    //public float snapiness = 6;
-    //public float returnSpeed = 2;
-
-
-    //private void Update()
-    //{
-    //    CalculateRecoil();
-    //}
-    //void CalculateRecoil()
-    //{
-    //    targetRotation = Vector3.Lerp(targetRotation, Vector3.zero, returnSpeed * Time.deltaTime);
-
-    //    currentRotation = Vector3.Slerp(currentRotation, targetRotation, snapiness * Time.fixedDeltaTime);
-
-    //    ObjectToSetRecoil.transform.localRotation = Quaternion.Euler(currentRotation);
-    //}
-    //public void RecoilShoot()
-    //{
-    //    targetRotation += new Vector3(recoilX, Random.Range(-recoilY, recoilY), Random.Range(-recoilZ, recoilZ));
-    //}
-
-    #endregion
-
     public GameObject Weapon;
     public GameObject Pivot;
     private Vector3 currentRotation;

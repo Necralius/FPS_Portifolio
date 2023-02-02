@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public enum ShootType { AutoOrSemi, BurstShot, Shotgun};
 
@@ -46,5 +47,14 @@ public class GunShooter : ScriptableObject
 
         Instantiate(selectedParticles[0], hitPosition, Quaternion.LookRotation(rotation));
         Instantiate(selectedParticles[1], hitPosition, Quaternion.LookRotation(rotation));
+    }
+
+    public void InstatiateParticles(string ParticleTag, Vector3 hitPosition, Vector3 rotation)
+    {
+        GameObject[] selectedParticles = null;
+
+        foreach(DefaultParticle particle in particlesDatabase.defaultParticles) if (particle.ParticleTag == ParticleTag) selectedParticles = particle.ParticlesPack;
+
+        Instantiate(selectedParticles[Random.Range(0, selectedParticles.Length)], hitPosition, Quaternion.LookRotation(rotation));
     }
 }

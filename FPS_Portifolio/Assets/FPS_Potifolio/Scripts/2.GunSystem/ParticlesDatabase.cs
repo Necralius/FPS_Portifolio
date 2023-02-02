@@ -6,4 +6,5 @@ using UnityEngine;
 public class ParticlesDatabase : ScriptableBaseModel
 {
     public List<GunParticle> particles;
+    public List<DefaultParticle> defaultParticles;
 }
