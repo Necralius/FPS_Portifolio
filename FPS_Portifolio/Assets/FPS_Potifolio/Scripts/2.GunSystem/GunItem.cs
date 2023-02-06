@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 using static ControllerModels;
 
 public class GunItem : HandableItem
@@ -17,12 +18,12 @@ public class GunItem : HandableItem
     #endregion
 
     private Controller_Character playerController;
-    private Camera playerCam => playerController.cameraHolder.GetComponentInChildren<Camera>();
+    private Camera PlayerCam => playerController.cameraHolder.GetComponentInChildren<Camera>();
 
     [Header("Gun Control Settings")]
     public WeaponSettingsModel gunSettings;
 
-    public GunShooter ShootAsset;
+    [FormerlySerializedAs("ShootAsset")] public GunShooter shootAsset;
 
     #region - General Smooth Variables -
     Vector3 newWeaponRotation;
@@ -96,7 +97,8 @@ public class GunItem : HandableItem
     [Header("Audio System")]
     public AudioClip shootSound;
 
-
+    public CustomTransformSave gunPosSave;
+    public bool posSeted = true;
 
     private void Awake()
     {
@@ -127,10 +129,10 @@ public class GunItem : HandableItem
     {
         currentFov = isAiming ? aimFov : defaultFov;
 
-        playerCam.fieldOfView = Mathf.Lerp(playerCam.fieldOfView, currentFov, aimTime * Time.deltaTime);
+        PlayerCam.fieldOfView = Mathf.Lerp(PlayerCam.fieldOfView, currentFov, aimTime * Time.deltaTime);
 
         sightOffset = isReloading && isAiming ? reloadingSightOffset : defaultSightOffset;
-        
+
         Vector3 targetPosition = transform.position;
 
         if (isAiming) targetPosition = playerController.cameraHolder.transform.position + (weaponSwayObject.transform.position - sightTarget.position) + (playerController.cameraHolder.transform.forward * sightOffset);
@@ -198,11 +200,11 @@ public class GunItem : HandableItem
     }
     IEnumerator ShootAction()
     {
-        RaycastShoot(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.forward, ShootAsset.shootType);
+        RaycastShoot(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.forward, shootAsset.shootType);
         GameManager.Instance.PlayShootSound(shootSound, 0.8f, 1f);
-        ShootAsset.InstatiateParticles("MuzzleFlash", shootPoint.transform.position, shootPoint.transform.eulerAngles);
+        shootAsset.InstatiateParticles("MuzzleFlash", shootPoint.transform.position, shootPoint.transform.eulerAngles);
 
-        yield return new WaitForSeconds(ShootAsset.RateOfFire);
+        yield return new WaitForSeconds(shootAsset.RateOfFire);
         canShoot = true;
     }
     private void RaycastShoot(Vector3 Direction, ShootType Type)
@@ -211,20 +213,20 @@ public class GunItem : HandableItem
 
         if (Type == ShootType.AutoOrSemi)
         {
-            if (Physics.Raycast(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.position, Direction, out ShootAsset.hit, ShootAsset.ShootRange, HitInteractionLayer)) ShootAsset.InstantiateSelectedParticles(ShootAsset.hit.transform.tag, ShootAsset.hit.point, ShootAsset.hit.normal);
+            if (Physics.Raycast(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.position, Direction, out shootAsset.hit, shootAsset.ShootRange, HitInteractionLayer)) shootAsset.InstantiateSelectedParticles(shootAsset.hit.transform.tag, shootAsset.hit.point, shootAsset.hit.normal);
         }
         else if (Type == ShootType.BurstShot)
         {
-            for (int i = 0; i < ShootAsset.ShootsPerTap; i++) if (Physics.Raycast(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.position, Direction, out ShootAsset.hit, ShootAsset.ShootRange, HitInteractionLayer)) ShootAsset.InstantiateSelectedParticles(ShootAsset.hit.transform.tag, ShootAsset.hit.point, ShootAsset.hit.normal);
+            for (int i = 0; i < shootAsset.ShootsPerTap; i++) if (Physics.Raycast(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.position, Direction, out shootAsset.hit, shootAsset.ShootRange, HitInteractionLayer)) shootAsset.InstantiateSelectedParticles(shootAsset.hit.transform.tag, shootAsset.hit.point, shootAsset.hit.normal);
         }
         else if (Type == ShootType.Shotgun)
         {
-            float X = Random.Range(-ShootAsset.ShootSpread, ShootAsset.ShootSpread);
-            float Y = Random.Range(-ShootAsset.ShootSpread, ShootAsset.ShootSpread);
+            float X = Random.Range(-shootAsset.ShootSpread, shootAsset.ShootSpread);
+            float Y = Random.Range(-shootAsset.ShootSpread, shootAsset.ShootSpread);
 
             Vector3 direction = Direction + new Vector3(X, Y, 0);
 
-            for (int i = 0; i < ShootAsset.ShootsPerTap; i++) if (Physics.Raycast(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.position, direction, out ShootAsset.hit, ShootAsset.ShootRange, HitInteractionLayer)) ShootAsset.InstantiateSelectedParticles(ShootAsset.hit.transform.tag, ShootAsset.hit.point, ShootAsset.hit.normal);
+            for (int i = 0; i < shootAsset.ShootsPerTap; i++) if (Physics.Raycast(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.position, direction, out shootAsset.hit, shootAsset.ShootRange, HitInteractionLayer)) shootAsset.InstantiateSelectedParticles(shootAsset.hit.transform.tag, shootAsset.hit.point, shootAsset.hit.normal);
         }
     }
     private void UpdateTexts() => playerController.ammoText.text = string.Format("{0}/{1}", currentMagAmmo, inventoryAmmo);
