@@ -96,8 +96,6 @@ public class GunItem : HandableItem
     [Header("Audio System")]
     public AudioClip shootSound;
 
-
-
     private void Awake()
     {
         inventoryAmmo = inventoryMaxAmmo;
@@ -130,14 +128,13 @@ public class GunItem : HandableItem
         playerCam.fieldOfView = Mathf.Lerp(playerCam.fieldOfView, currentFov, aimTime * Time.deltaTime);
 
         sightOffset = isReloading && isAiming ? reloadingSightOffset : defaultSightOffset;
-        
+
         Vector3 targetPosition = transform.position;
 
         if (isAiming) targetPosition = playerController.cameraHolder.transform.position + (weaponSwayObject.transform.position - sightTarget.position) + (playerController.cameraHolder.transform.forward * sightOffset);
 
         weaponSwayPosition = weaponSwayObject.transform.position;
         weaponSwayPosition = Vector3.SmoothDamp(weaponSwayPosition, targetPosition, ref weaponSwayPositionVelocity, aimingTime);
-
         weaponSwayObject.transform.position = weaponSwayPosition + swayPosition;
     }
     private void PlayerStateData()
@@ -148,7 +145,7 @@ public class GunItem : HandableItem
     { 
         if (handableAnim != null)
         {
-            handableAnim.SetBool("IsWalking", isWalking); modelAnimator.SetBool("IsRunning", isSprinting);
+            handableAnim.SetBool("IsWalking", isWalking); handableAnim.SetBool("IsRunning", isSprinting);
         }
         else return;
     }
@@ -230,7 +227,7 @@ public class GunItem : HandableItem
     private void UpdateTexts() => playerController.ammoText.text = string.Format("{0}/{1}", currentMagAmmo, inventoryAmmo);
     private void AnimationsStates() => modelAnimator.SetBool("Reloading", isReloading);
     private void Reload() => isReloading = true;
-    public void EndReload()
+    public void EndReload()//Need remodeling
     {
         isReloading = false;
         int neededAmmo = magMaxAmmo - currentMagAmmo;
@@ -244,10 +241,5 @@ public class GunItem : HandableItem
             currentMagAmmo = magMaxAmmo;
             inventoryAmmo -= magMaxAmmo;
         }
-    }
-    private void ShootSound()
-    {
-
-
     }
 }
