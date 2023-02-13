@@ -14,8 +14,23 @@ public class GameManager : MonoBehaviour
     public AudioSource MusicSource;
     public AudioSource VoiceSource;
 
+    [Header("Main Game Elements Storage")]
+    public GameObject crossHair;
+
     public void PlayShootSound(AudioClip ClipToPlay, float MinValue, float MaxValue)
     {
         EffectsSource.volume = Random.Range(0.8f, 1f); EffectsSource.pitch = Random.Range(MinValue, MaxValue); EffectsSource.PlayOneShot(ClipToPlay);
+    }
+    public void PlaySound(AudioClip AudioToPlay, AudioType audioType)
+    {
+        switch (audioType)
+        {
+            case AudioType.EffectAudio: EffectsSource.PlayOneShot(AudioToPlay);
+                break;
+            case AudioType.MusicAudio: MusicSource.PlayOneShot(AudioToPlay);
+                break;
+            case AudioType.VoiceAudio: VoiceSource.PlayOneShot(AudioToPlay);
+                break;
+        }
     }
 }

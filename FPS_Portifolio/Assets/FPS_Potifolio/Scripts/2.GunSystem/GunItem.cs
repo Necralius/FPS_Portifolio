@@ -83,6 +83,8 @@ public class GunItem : HandableItem
 
     public int inventoryAmmo;
     public int inventoryMaxAmmo;
+
+    int neededAmmo;
     #endregion
 
     public bool canShoot = true;
@@ -90,11 +92,9 @@ public class GunItem : HandableItem
     public LayerMask HitInteractionLayer;
     public GunProceduralRecoil recoilAsset => GetComponent<GunProceduralRecoil>();
 
-    public Transform objectToDebug;
-    public Vector3 PosDebugger;
-
     [Header("Audio System")]
     public AudioClip shootSound;
+    public AudioClip emptySound;
 
     private void Awake()
     {
@@ -105,8 +105,6 @@ public class GunItem : HandableItem
     private void Start() => newWeaponRotation = transform.localRotation.eulerAngles;
     private void Update()
     {
-        if (objectToDebug != null) PosDebugger = objectToDebug.transform.localPosition;
-        
         PlayerStateData();
         AnimationCalculations();
         CalculateWeaponRotation();
@@ -128,6 +126,8 @@ public class GunItem : HandableItem
         playerCam.fieldOfView = Mathf.Lerp(playerCam.fieldOfView, currentFov, aimTime * Time.deltaTime);
 
         sightOffset = isReloading && isAiming ? reloadingSightOffset : defaultSightOffset;
+
+        GameManager.Instance.crossHair.SetActive(!isAiming);
 
         Vector3 targetPosition = transform.position;
 
@@ -185,26 +185,28 @@ public class GunItem : HandableItem
     private Vector3 LissajousCurve(float Time, float A, float B) => new Vector3(Mathf.Sin(Time), A * Mathf.Sin(B * Time + Mathf.PI));
     private void ShootInput()
     {
-        if (Input.GetMouseButton(0) && canShoot && !(currentMagAmmo <= 0) && !isReloading && !isSprinting)
+        if (Input.GetMouseButtonDown(0) && canShoot && (currentMagAmmo <= 0) && !isReloading && !isSprinting) GameManager.Instance.PlaySound(emptySound, AudioType.EffectAudio);
+        else if (Input.GetMouseButton(0) && canShoot && (currentMagAmmo > 0) && !isReloading && !isSprinting)
         {
-            recoilAsset.RecoilFire(isAiming);
             canShoot = false;
-            currentMagAmmo--;
             StartCoroutine(ShootAction());
         }
     }
     IEnumerator ShootAction()
     {
-        RaycastShoot(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.forward, ShootAsset.shootType);
-        GameManager.Instance.PlayShootSound(shootSound, 0.8f, 1f);
-        ShootAsset.InstatiateParticles("MuzzleFlash", shootPoint.transform.position, shootPoint.transform.eulerAngles);
+        if (currentMagAmmo > 0) RaycastShoot(playerController.cameraHolder.GetComponentInChildren<Camera>().transform.forward, ShootAsset.shootType);
+        else GameManager.Instance.PlaySound(emptySound, AudioType.EffectAudio);
 
         yield return new WaitForSeconds(ShootAsset.RateOfFire);
         canShoot = true;
     }
     private void RaycastShoot(Vector3 Direction, ShootType Type)
     {
-        Debug.Log("Shooted!");
+        GameManager.Instance.PlayShootSound(shootSound, 0.8f, 1f);
+
+        currentMagAmmo--;
+        recoilAsset.RecoilFire(isAiming);
+        ShootAsset.InstatiateParticles("MuzzleFlash", shootPoint.transform.position, shootPoint.transform.eulerAngles);
 
         if (Type == ShootType.AutoOrSemi)
         {
@@ -226,11 +228,18 @@ public class GunItem : HandableItem
     }
     private void UpdateTexts() => playerController.ammoText.text = string.Format("{0}/{1}", currentMagAmmo, inventoryAmmo);
     private void AnimationsStates() => modelAnimator.SetBool("Reloading", isReloading);
-    private void Reload() => isReloading = true;
-    public void EndReload()//Need remodeling
+    private void Reload()
+    {
+        neededAmmo = magMaxAmmo - currentMagAmmo;
+        if (neededAmmo == magMaxAmmo) modelAnimator.SetInteger("ReloadType", 1);
+        else if (neededAmmo < magMaxAmmo) modelAnimator.SetInteger("ReloadType", 0);
+
+        isReloading = true;
+    }
+    public void EndReload()
     {
         isReloading = false;
-        int neededAmmo = magMaxAmmo - currentMagAmmo;
+
         if (neededAmmo > inventoryAmmo)
         {
             currentMagAmmo = inventoryAmmo;
@@ -239,7 +248,7 @@ public class GunItem : HandableItem
         else if (neededAmmo < inventoryAmmo)
         {
             currentMagAmmo = magMaxAmmo;
-            inventoryAmmo -= magMaxAmmo;
+            inventoryAmmo -= neededAmmo;
         }
     }
 }
