@@ -8,6 +8,7 @@ using static ControllerModels;
 
 public class Controller_Character : MonoBehaviour
 {
+   
     public static Controller_Character PlayerIntance;
 
     public HandableItem ItemOnHands;

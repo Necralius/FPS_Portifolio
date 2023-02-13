@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
 
     [Header("Main Game Elements Storage")]
     public GameObject crossHair;
+    public GameObject gunName;
+    public GameObject gunState;
 
     public void PlayShootSound(AudioClip ClipToPlay, float MinValue, float MaxValue)
     {

@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using static ControllerModels;
+using Random = UnityEngine.Random;
 
 public class GunItem : HandableItem
 {
@@ -15,6 +18,7 @@ public class GunItem : HandableItem
     public bool isAiming = false;
     public bool isHolsted = false;
     #endregion
+
 
     private Controller_Character playerController;
     private Camera playerCam => playerController.cameraHolder.GetComponentInChildren<Camera>();
@@ -95,6 +99,10 @@ public class GunItem : HandableItem
     [Header("Audio System")]
     public AudioClip shootSound;
     public AudioClip emptySound;
+    public AudioClip reloadSound;
+    public AudioClip fullReloadClip;
+
+    public GunHolst currentGunHolster;
 
     private void Awake()
     {
@@ -250,5 +258,33 @@ public class GunItem : HandableItem
             currentMagAmmo = magMaxAmmo;
             inventoryAmmo -= neededAmmo;
         }
+    }
+
+    public void HolsterGun()
+    {
+        
+        
+        
+        
+    }
+
+    public void DrawWeapon()
+    {
+        
+    }
+
+}
+
+
+[Serializable]
+public struct GunHolst
+{
+    public GunItem gunItem;
+    public int hotbarID;
+
+    public GunHolst(GunItem gunToHold, int hotbarID)
+    {
+        this.gunItem = gunToHold;
+        this.hotbarID = hotbarID;
     }
 }
