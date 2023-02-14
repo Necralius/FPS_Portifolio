@@ -109,7 +109,7 @@ ModelImporter:
       name: Gun_Holst
       takeName: CINEMA_4D_Main
       internalID: -326175440551238874
-      firstFrame: 135
+      firstFrame: 132
       lastFrame: 144
       wrapMode: 0
       orientationOffsetY: 0
@@ -139,7 +139,7 @@ ModelImporter:
       takeName: CINEMA_4D_Main
       internalID: -1144997352311231146
       firstFrame: 144
-      lastFrame: 177
+      lastFrame: 178
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

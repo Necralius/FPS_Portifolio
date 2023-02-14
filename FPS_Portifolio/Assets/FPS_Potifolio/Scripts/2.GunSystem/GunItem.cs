@@ -126,6 +126,9 @@ public class GunItem : HandableItem
     private void GetInputs()
     {
         if (Input.GetKeyDown(KeyCode.R) && currentMagAmmo < magMaxAmmo) Reload();
+        if (Input.GetKeyDown(KeyCode.H) && !isHolsted) HolsterGun();
+        if (Input.GetKeyDown(KeyCode.H) && isHolsted) DrawWeapon();
+
     }
     private void CalculateAimingIn()
     {
@@ -193,11 +196,14 @@ public class GunItem : HandableItem
     private Vector3 LissajousCurve(float Time, float A, float B) => new Vector3(Mathf.Sin(Time), A * Mathf.Sin(B * Time + Mathf.PI));
     private void ShootInput()
     {
-        if (Input.GetMouseButtonDown(0) && canShoot && (currentMagAmmo <= 0) && !isReloading && !isSprinting) GameManager.Instance.PlaySound(emptySound, AudioType.EffectAudio);
-        else if (Input.GetMouseButton(0) && canShoot && (currentMagAmmo > 0) && !isReloading && !isSprinting)
+        if (!isHolsted)
         {
-            canShoot = false;
-            StartCoroutine(ShootAction());
+            if (Input.GetMouseButtonDown(0) && canShoot && (currentMagAmmo <= 0) && !isReloading && !isSprinting) GameManager.Instance.PlaySound(emptySound, AudioType.EffectAudio);
+            else if (Input.GetMouseButton(0) && canShoot && (currentMagAmmo > 0) && !isReloading && !isSprinting)
+            {
+                canShoot = false;
+                StartCoroutine(ShootAction());
+            }
         }
     }
     IEnumerator ShootAction()
@@ -262,20 +268,13 @@ public class GunItem : HandableItem
 
     public void HolsterGun()
     {
-        
-        
-        
-        
+        modelAnimator.SetBool("GunHolsted", true);
+        isHolsted = true;      
     }
 
-    public void DrawWeapon()
-    {
-        
-    }
-
+    public void DrawWeapon() => modelAnimator.SetBool("GunHolsted", false);
+    public void FinishWeaponDraw() => isHolsted = false;
 }
-
-
 [Serializable]
 public struct GunHolst
 {
